@@ -4,13 +4,17 @@
 <div class="container">
     <div class="col-xl-8 mx-auto my-5">
         <div class="row ml-3 mb-3">
-            <a class="btn btn-sm btn-success my-3" href="{% url 'nuevo_jugador' %}">Nuevo</a>
+            {% if request.user.is_superuser %}
+                <a class="btn btn-sm btn-success my-3" href="{% url 'nuevo_jugador' %}">Nuevo</a>
+            {% endif %}
             <h2 class="m-3">Jugadores</h2>
         </div>
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th scope="col"></th>
+                    {% if request.user.is_superuser %}
+                        <th scope="col"></th>
+                    {% endif %}
                     <th scope="col">Nombre</th>
                     <th scope="col">Edad</th>
                     <th scope="col">Costo</th>
@@ -19,10 +23,13 @@
             <tbody>
             {% for jugador in jugadores %}
                 <tr>
-                    <td class="">
-                        <button class="btn btn-sm btn-primary">Comprar</button>
-                        <button class="btn btn-sm btn-info">Vender</button>
-                    </td>
+                    {% if request.user.is_superuser %}
+                        <td class="">
+                            <a href="#" class="btn btn-sm btn-primary">Comprar</a>
+                            <a href="#" class="btn btn-sm btn-info">Vender</a>
+                            <a href="{% url 'eliminar_jugador' jugador.id %}" class="btn btn-sm btn-danger">X</button>
+                        </td>
+                    {% endif %}
                     <td><a href="{% url 'editar_jugador' jugador.id %}">{{ jugador.nombre }}</a></td>
                     <td>{{ jugador.edad }}</td>
                     <td>{{ jugador.costo }}</td>

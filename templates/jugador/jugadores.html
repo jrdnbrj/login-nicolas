@@ -29,13 +29,19 @@
                             {% if not jugador.club %}
                                 <a href="{% url 'comprar_jugador' jugador.id %}" class="btn btn-sm btn-primary">Comprar</a>
                             {% endif %}
-                            {% if jugador.club and jugador.club == club %}
-                                <a href="#" class="btn btn-sm btn-info">Vender</a>
+                            {% if jugador.club == club %}
+                                <a href="{% url 'vender_jugador' jugador.id %}" class="btn btn-sm btn-info">Vender</a>
                                 <a href="{% url 'eliminar_jugador' jugador.id %}" class="btn btn-sm btn-danger">X</button>
                             {% endif %}
                         </td>
                     {% endif %}
-                    <td><a href="{% url 'editar_jugador' jugador.id %}">{{ jugador.nombre }}</a></td>
+                    <td>
+                        {% if jugador.club and jugador.club == club %}
+                            <a href="{% url 'editar_jugador' jugador.id %}">{{ jugador.nombre }}</a>
+                        {% else %}
+                            {{ jugador.nombre }}
+                        {% endif %}
+                    </td>
                     <td>{{ jugador.edad }}</td>
                     <td>{{ jugador.costo }}</td>
                     <td>{% if jugador.club %}{{ jugador.club }}{% else %}-{% endif %}</td>

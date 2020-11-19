@@ -8,7 +8,8 @@ from .models import *
 # Create your views here.
 def index(request):
     users = User.objects.all()
-    return render(request, 'index.html', { 'users': users })
+    clubes = Club.objects.all()
+    return render(request, 'index.html', { 'users': users, 'clubes': clubes })
 
 def crear_cuenta(request):
     if request.method == 'POST':
@@ -50,7 +51,10 @@ def cerrar_sesion(request):
 @login_required
 def jugadores(request):
     jugadores = Jugador.objects.all()
-    club = Club.objects.get(usuario=request.user)
+    try:
+        club = Club.objects.get(usuario=request.user)
+    except Club.DoesNotExist:
+        club = None
     return render(request, 'jugador/jugadores.html', { 'jugadores': jugadores, 'club': club })
 
 @login_required
@@ -89,6 +93,13 @@ def comprar_jugador(request, id):
     club = Club.objects.get(usuario=request.user)
     jugador = Jugador.objects.get(id=id)
     jugador.club = club
+    jugador.save()
+    return redirect('jugadores')
+
+@login_required
+def vender_jugador(request, id):
+    jugador = Jugador.objects.get(id=id)
+    jugador.club = None
     jugador.save()
     return redirect('jugadores')
 

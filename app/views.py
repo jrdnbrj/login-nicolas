@@ -50,11 +50,11 @@ def cerrar_sesion(request):
 @login_required
 def jugadores(request):
     jugadores = Jugador.objects.all()
-    return render(request, 'jugador/jugadores.html', { 'jugadores': jugadores })
+    club = Club.objects.get(usuario=request.user)
+    return render(request, 'jugador/jugadores.html', { 'jugadores': jugadores, 'club': club })
 
 @login_required
 def nuevo_jugador(request):
-    context = {}
     if request.method == 'POST' and request.user.is_superuser:
         jugador = JugadorForm(request.POST)
         if jugador.is_valid():
@@ -62,11 +62,10 @@ def nuevo_jugador(request):
         else:
             print(jugador.errors)
         return redirect('jugadores')
-    return render(request, 'jugador/crear_editar_jugador.html', {})
+    return render(request, 'jugador/crear_editar_jugador.html')
 
 @login_required
 def editar_jugador(request, id):
-    context = {}
     jugador = Jugador.objects.get(id=id)
     print(jugador)
     if request.method == 'POST' and request.user.is_superuser:
@@ -85,3 +84,34 @@ def eliminar_jugador(request, id):
         jugador.delete()
     return redirect('jugadores')
 
+@login_required
+def comprar_jugador(request, id):
+    club = Club.objects.get(usuario=request.user)
+    jugador = Jugador.objects.get(id=id)
+    jugador.club = club
+    jugador.save()
+    return redirect('jugadores')
+
+# CLUB
+
+@login_required
+def nuevo_club(request):
+    if request.method == 'POST':
+        nombre = request.POST['nombre']
+        usuario = request.user
+        club = Club(nombre=nombre, usuario=usuario)
+        club.save()
+        usuario.is_superuser = True
+        usuario.save()
+        return redirect('jugadores')
+    return render(request, 'club/crear_editar_club.html')
+
+@login_required
+def editar_club(request):
+    club = Club.objects.get(usuario=request.user)
+    if request.method == 'POST':
+        nombre = request.POST['nombre']
+        club.nombre = nombre
+        club.save()
+        return redirect('jugadores')
+    return render(request, 'club/crear_editar_club.html', { 'club': club, 'action': 'Editar' })

@@ -11,5 +11,8 @@ urlpatterns = [
     path('jugador/nuevo', nuevo_jugador, name='nuevo_jugador'),
     path('jugador/<int:id>/editar', editar_jugador, name='editar_jugador'),
     path('jugador/<int:id>/eliminar', eliminar_jugador, name='eliminar_jugador'),
-
+    path('jugador/<int:id>/comprar', comprar_jugador, name='comprar_jugador'),
+    #Clubes
+    path('club/nuevo', nuevo_club, name='nuevo_club'),
+    path('club/editar', editar_club, name='editar_club'),
 ]

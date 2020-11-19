@@ -11,28 +11,34 @@
         </div>
         <table class="table table-hover">
             <thead>
-                <tr>
+                <tr class="text-center">
                     {% if request.user.is_superuser %}
                         <th scope="col"></th>
                     {% endif %}
                     <th scope="col">Nombre</th>
                     <th scope="col">Edad</th>
                     <th scope="col">Costo</th>
+                    <th scope="col">Club</th>
                 </tr>
             </thead>
             <tbody>
             {% for jugador in jugadores %}
-                <tr>
+                <tr class="text-center">
                     {% if request.user.is_superuser %}
-                        <td class="">
-                            <a href="#" class="btn btn-sm btn-primary">Comprar</a>
-                            <a href="#" class="btn btn-sm btn-info">Vender</a>
-                            <a href="{% url 'eliminar_jugador' jugador.id %}" class="btn btn-sm btn-danger">X</button>
+                        <td>
+                            {% if not jugador.club %}
+                                <a href="{% url 'comprar_jugador' jugador.id %}" class="btn btn-sm btn-primary">Comprar</a>
+                            {% endif %}
+                            {% if jugador.club and jugador.club == club %}
+                                <a href="#" class="btn btn-sm btn-info">Vender</a>
+                                <a href="{% url 'eliminar_jugador' jugador.id %}" class="btn btn-sm btn-danger">X</button>
+                            {% endif %}
                         </td>
                     {% endif %}
                     <td><a href="{% url 'editar_jugador' jugador.id %}">{{ jugador.nombre }}</a></td>
                     <td>{{ jugador.edad }}</td>
                     <td>{{ jugador.costo }}</td>
+                    <td>{% if jugador.club %}{{ jugador.club }}{% else %}-{% endif %}</td>
                 </tr>
             {% endfor %}
             </tbody>

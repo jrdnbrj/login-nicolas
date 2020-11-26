@@ -5,7 +5,9 @@
     <div class="shadow-lg col-xl-8 mx-auto m-5 px-5 py-2">
         <div class="row justify-content-between">
             <h2 class="m-4 display-4">{% if action %}{{ action }}{% else %}Nuevo{% endif %} Club</h2>
-            <button class="btn btn-info my-5" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Ver Jugadores</button>
+            {% if action %}
+                <button class="btn btn-info my-5" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Ver Jugadores</button>
+            {% endif %}
         </div>
         <form method="POST">{% csrf_token %}
             <div class="form-group">

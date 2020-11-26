@@ -2,15 +2,85 @@
 {% block title %}{% if action %}{{ action }}{% else %}Nuevo{% endif %} Club{% endblock %}
 {% block content %}
 <div class="container">
-    <div class="col-xl-8 mx-auto my-5">
-        <h2 class="m-4">{% if action %}{{ action }}{% else %}Nuevo{% endif %} Club</h2>
+    <div class="shadow-lg col-xl-8 mx-auto m-5 px-5 py-2">
+        <div class="row justify-content-between">
+            <h2 class="m-4 display-4">{% if action %}{{ action }}{% else %}Nuevo{% endif %} Club</h2>
+            <button class="btn btn-info my-5" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Ver Jugadores</button>
+        </div>
         <form method="POST">{% csrf_token %}
             <div class="form-group">
-                <label>Nombre del Club</label><br>
-                <input type="text" class="form-control" name="nombre" value="{{ club.nombre }}">
+                <label>Nombre del Club</label>
+                <input type="text" class="form-control" name="nombre" value="{% if form.errors %}{{ form.nombre.value }}{% else %}{{ club.nombre }}{% endif %}" required>
+                {% for error in form.nombre.errors %}
+                    <small class="text-danger">{{ error }}</small>
+                {% endfor %}
             </div>
-            <button type="submit" class="btn btn-primary">{% if action %}{{ action }}{% else %}Guardar{% endif %}</button>
+            <div class="form-group">
+                <label>Correo Electrónico</label><br>
+                <input type="email" class="form-control" name="email" value="{% if form.errors %}{{ form.email.value }}{% else %}{{ club.email }}{% endif %}" required>
+                {% for error in form.email.errors %}
+                    <small class="text-danger">{{ error }}</small>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label>País</label><br>
+                <input type="text" class="form-control" name="pais" value="{% if form.errors %}{{ form.pais.value }}{% else %}{{ club.pais }}{% endif %}" required>
+                {% for error in form.pais.errors %}
+                    <small class="text-danger">{{ error }}</small>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label>Número de contacto</label><br>
+                <input type="number" class="form-control" name="telefono" value="{% if form.errors %}{{ form.telefono.value }}{% else %}{{ club.telefono }}{% endif %}" required>
+                {% for error in form.telefono.errors %}
+                    <small class="text-danger">{{ error }}</small>
+                {% endfor %}
+            </div>
+            {% if action %}
+                <div class="form-group">
+                    <label>Total dinero invertido en Jugadores</label><br>
+                    <input class="form-control" type="text" placeholder="$ {{ club.dinero_invertido }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Total dinero ganado con venta de Jugadores</label><br>
+                    <input class="form-control" type="text" placeholder="$ {{ club.dinero_ganado }}" readonly>
+                </div>
+            {% endif %}
+            <button type="submit" class="btn btn-primary">Guardar</button>
         </form>
     </div>
+</div>
+<!--MODAL-->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Jugadores de <strong>{{ club.nombre }}</strong></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-hover">
+            <thead>
+                <tr class="text-center">
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Edad</th>
+                    <th scope="col">Costo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for jugador in jugadores %}
+                    <tr class="text-center">
+                        <td><a href="{% url 'editar_jugador' jugador.id %}">{{ jugador.nombre }}</a></td>
+                        <td>{{ jugador.edad }}</td>
+                        <td>$ {{ jugador.costo }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

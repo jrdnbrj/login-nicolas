@@ -15,13 +15,12 @@ def crear_cuenta(request):
     if request.method == 'POST':
         user = UserForm(request.POST)
         if user.is_valid():
-            print('valid')
             user = User.objects.create_user(request.POST['username'], request.POST['email'], request.POST['password'])
             if user is None:
                 print('User is None')
-            redirect('iniciar_sesion')
+                redirect('iniciar_sesion')
+            return redirect('iniciar_sesion')
         else:
-            print('not valid')
             print(user.errors)
     return render(request, 'login/crear_cuenta.html')
 
@@ -94,35 +93,63 @@ def comprar_jugador(request, id):
     jugador = Jugador.objects.get(id=id)
     jugador.club = club
     jugador.save()
+
+    club.dinero_invertido = club.dinero_invertido + jugador.costo
+    club.save()
     return redirect('jugadores')
 
 @login_required
 def vender_jugador(request, id):
+    club = Club.objects.get(usuario=request.user)
     jugador = Jugador.objects.get(id=id)
     jugador.club = None
     jugador.save()
+
+    club.dinero_ganado = club.dinero_ganado + jugador.costo
+    club.save()
     return redirect('jugadores')
 
 # CLUB
 
+def clubes(request):
+    clubes = Club.objects.all()
+    jugadores = Jugador.objects.all()
+    return render(request, 'club/clubes.html', { 'clubes': clubes, 'jugadores': jugadores })
+
 @login_required
 def nuevo_club(request):
+    context = {}
     if request.method == 'POST':
-        nombre = request.POST['nombre']
-        usuario = request.user
-        club = Club(nombre=nombre, usuario=usuario)
-        club.save()
-        usuario.is_superuser = True
-        usuario.save()
-        return redirect('jugadores')
-    return render(request, 'club/crear_editar_club.html')
+        club = ClubForm(request.POST)
+        if club.is_valid():
+            club = club.save(commit=False)
+            club.usuario = request.user
+            club.save()
+            usuario = request.user
+            usuario.is_superuser = True
+            usuario.save()
+            return redirect('jugadores')
+        else:
+            print(club.errors)
+            context['form'] = club
+    return render(request, 'club/crear_editar_club.html', context)
 
 @login_required
 def editar_club(request):
     club = Club.objects.get(usuario=request.user)
+    jugadores = Jugador.objects.filter(club=club.id)
+    print('Jugadores:', jugadores)
+    context = { 
+        'action': 'Editar',
+        'club': club, 
+        'jugadores': jugadores
+    }
     if request.method == 'POST':
-        nombre = request.POST['nombre']
-        club.nombre = nombre
-        club.save()
-        return redirect('jugadores')
-    return render(request, 'club/crear_editar_club.html', { 'club': club, 'action': 'Editar' })
+        club = ClubForm(request.POST, instance=club)
+        if club.is_valid():
+            club.save()
+            return redirect('editar_club')
+        else:
+            print(club.errors)
+            context['form'] = club
+    return render(request, 'club/crear_editar_club.html', context)

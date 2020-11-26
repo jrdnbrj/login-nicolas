@@ -2,8 +2,8 @@
 {% block title %}{% if action %}{{ action }}{% else %}Nuevo{% endif %} Jugador{% endblock %}
 {% block content %}
 <div class="container">
-    <div class="col-xl-8 mx-auto my-5">
-        <h2 class="m-4">{% if action %}{{ action }}{% else %}Nuevo{% endif %} Jugador</h2>
+    <div class="shadow-lg col-xl-8 mx-auto m-5 px-5 py-2">
+        <h2 class="m-4 display-4">{% if action %}{{ action }}{% else %}Nuevo{% endif %} Jugador</h2>
         <form method="POST">{% csrf_token %}
             <div class="form-group">
                 <label>Nombre</label><br>
@@ -17,7 +17,7 @@
                 <label>Costo</label>
                 <input type="text" class="form-control" name="costo" value="{{ jugador.costo }}">
             </div>
-            <button type="submit" class="btn btn-primary">{% if action %}{{ action }}{% else %}Guardar{% endif %}</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
         </form>
     </div>
 </div>

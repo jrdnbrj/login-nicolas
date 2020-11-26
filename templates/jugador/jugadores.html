@@ -2,51 +2,51 @@
 {% block title %}Jugadores{% endblock %}
 {% block content %}
 <div class="container">
-    <div class="col-xl-8 mx-auto my-5">
-        <div class="row ml-3 mb-3">
+    <div class="shadow-lg col-xl-8 mx-auto m-5 px-5 py-2">
+        <div class="row ml-3 mb-3 justify-content-between">
+            <h2 class="m-3 display-4">Jugadores</h2>
             {% if request.user.is_superuser %}
-                <a class="btn btn-sm btn-success my-3" href="{% url 'nuevo_jugador' %}">Nuevo</a>
+                <a class="btn btn-sm btn-success my-5" href="{% url 'nuevo_jugador' %}">Nuevo</a>
             {% endif %}
-            <h2 class="m-3">Jugadores</h2>
         </div>
         <table class="table table-hover">
             <thead>
                 <tr class="text-center">
-                    {% if request.user.is_superuser %}
-                        <th scope="col"></th>
-                    {% endif %}
                     <th scope="col">Nombre</th>
                     <th scope="col">Edad</th>
                     <th scope="col">Costo</th>
                     <th scope="col">Club</th>
+                    {% if request.user.is_superuser %}
+                        <th scope="col"></th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
-            {% for jugador in jugadores %}
-                <tr class="text-center">
-                    {% if request.user.is_superuser %}
+                {% for jugador in jugadores %}
+                    <tr class="text-center">
                         <td>
-                            {% if not jugador.club %}
-                                <a href="{% url 'comprar_jugador' jugador.id %}" class="btn btn-sm btn-primary">Comprar</a>
-                            {% endif %}
-                            {% if jugador.club == club %}
-                                <a href="{% url 'vender_jugador' jugador.id %}" class="btn btn-sm btn-info">Vender</a>
-                                <a href="{% url 'eliminar_jugador' jugador.id %}" class="btn btn-sm btn-danger">X</button>
+                            {% if jugador.club and jugador.club == club %}
+                                <a href="{% url 'editar_jugador' jugador.id %}">{{ jugador.nombre }}</a>
+                            {% else %}
+                                {{ jugador.nombre }}
                             {% endif %}
                         </td>
-                    {% endif %}
-                    <td>
-                        {% if jugador.club and jugador.club == club %}
-                            <a href="{% url 'editar_jugador' jugador.id %}">{{ jugador.nombre }}</a>
-                        {% else %}
-                            {{ jugador.nombre }}
+                        <td>{{ jugador.edad }}</td>
+                        <td>$ {{ jugador.costo }}</td>
+                        <td>{% if jugador.club %}{{ jugador.club }}{% else %}-{% endif %}</td>
+                        {% if request.user.is_superuser %}
+                            <td>
+                                {% if not jugador.club %}
+                                    <a href="{% url 'comprar_jugador' jugador.id %}" class="btn btn-sm btn-primary">Comprar</a>
+                                {% endif %}
+                                {% if jugador.club == club %}
+                                    <a href="{% url 'vender_jugador' jugador.id %}" class="btn btn-sm btn-info">Vender</a>
+                                    <a href="{% url 'eliminar_jugador' jugador.id %}" class="btn btn-sm btn-danger" class="close" aria-label="Close" type="button"><span aria-hidden="true">&times;</span></button>
+                                {% endif %}
+                            </td>
                         {% endif %}
-                    </td>
-                    <td>{{ jugador.edad }}</td>
-                    <td>{{ jugador.costo }}</td>
-                    <td>{% if jugador.club %}{{ jugador.club }}{% else %}-{% endif %}</td>
-                </tr>
-            {% endfor %}
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>

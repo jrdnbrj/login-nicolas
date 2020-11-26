@@ -13,3 +13,9 @@ class JugadorForm(forms.ModelForm):
     class Meta:
         model = Jugador
         fields = '__all__'
+
+class ClubForm(forms.ModelForm):
+
+    class Meta:
+        model = Club
+        fields = ('nombre', 'email', 'pais', 'telefono')

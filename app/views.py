@@ -178,12 +178,6 @@ def reporte(request):
 
         club = Club.objects.get(nombre=request.POST['club'])
 
-        
-        # transacciones = [transaccion for transaccion in transacciones if transaccion.club_origen == club or transaccion.club_destino == club]
-        # transacciones = transacciones.filter(club_origen=club)
-        # transacciones = transacciones.filter(club_destino=club)
-
-
         if request.POST['date_from']:
             transacciones = transacciones.exclude(fecha__lt=request.POST['date_from'])
         if request.POST['date_to']:
@@ -193,13 +187,10 @@ def reporte(request):
 
         invertido = [transaccion.costo for transaccion in invertido]
         ganado = [transaccion.costo for transaccion in ganado]
-
-        invertido = sum(invertido)
-        ganado = sum(ganado)
     
     context = {
         'clubes': clubes,
         'club': club,
-        'ganancia': ganado - invertido,
+        'ganancia': sum(ganado) - sum(invertido),
     }
     return render(request, 'reporte.html', context)

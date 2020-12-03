@@ -170,6 +170,7 @@ def iniciar_transaccion(club_origen, club_destino, jugador):
 def reporte(request):
     clubes = Club.objects.all()
     transacciones = Transaccion.objects.all()
+    context = {}
     if request.method == 'POST':
         club = request.POST['club']
         date_from = request.POST['date_from']
@@ -188,9 +189,9 @@ def reporte(request):
         invertido = [transaccion.costo for transaccion in invertido]
         ganado = [transaccion.costo for transaccion in ganado]
     
-    context = {
-        'clubes': clubes,
-        'club': club,
-        'ganancia': sum(ganado) - sum(invertido),
-    }
+        context = {
+            'clubes': clubes,
+            'club': club,
+            'ganancia': sum(ganado) - sum(invertido),
+        }
     return render(request, 'reporte.html', context)

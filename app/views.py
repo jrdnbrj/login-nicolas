@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import *
 from .models import *
 
+
 # Create your views here.
 def index(request):
     users = User.objects.all()
@@ -58,27 +59,30 @@ def jugadores(request):
 
 @login_required
 def nuevo_jugador(request):
+    context = {}
     if request.method == 'POST' and request.user.is_superuser:
         jugador = JugadorForm(request.POST)
         if jugador.is_valid():
             jugador.save()
+            return redirect('jugadores')
         else:
             print(jugador.errors)
-        return redirect('jugadores')
-    return render(request, 'jugador/crear_editar_jugador.html')
+            context['form'] = jugador
+    return render(request, 'jugador/crear_editar_jugador.html', context)
 
 @login_required
 def editar_jugador(request, id):
     jugador = Jugador.objects.get(id=id)
-    print(jugador)
+    context = { 'jugador': jugador, 'action': 'Editar' }
     if request.method == 'POST' and request.user.is_superuser:
         jugador = JugadorForm(request.POST, instance=jugador)
         if jugador.is_valid():
             jugador.save()
+            return redirect('jugadores')
         else:
             print(jugador.errors)
-        return redirect('jugadores')
-    return render(request, 'jugador/crear_editar_jugador.html', { 'jugador': jugador, 'action': 'Editar' })
+            context['form'] = jugador
+    return render(request, 'jugador/crear_editar_jugador.html', context)
 
 @login_required
 def eliminar_jugador(request, id):
@@ -91,22 +95,13 @@ def eliminar_jugador(request, id):
 def comprar_jugador(request, id):
     club = Club.objects.get(usuario=request.user)
     jugador = Jugador.objects.get(id=id)
-    jugador.club = club
-    jugador.save()
-
-    club.dinero_invertido = club.dinero_invertido + jugador.costo
-    club.save()
+    transaccion = iniciar_transaccion(jugador.club, club, jugador)
     return redirect('jugadores')
 
 @login_required
 def vender_jugador(request, id):
-    club = Club.objects.get(usuario=request.user)
     jugador = Jugador.objects.get(id=id)
-    jugador.club = None
-    jugador.save()
-
-    club.dinero_ganado = club.dinero_ganado + jugador.costo
-    club.save()
+    transaccion = iniciar_transaccion(jugador.club, None, jugador)
     return redirect('jugadores')
 
 # CLUB
@@ -153,3 +148,58 @@ def editar_club(request):
             print(club.errors)
             context['form'] = club
     return render(request, 'club/crear_editar_club.html', context)
+
+# Transaccion
+
+def iniciar_transaccion(club_origen, club_destino, jugador):
+    transaccion = Transaccion(
+        club_origen=club_origen,
+        club_destino=club_destino,
+        jugador=jugador,
+        costo=jugador.costo
+    )
+    transaccion.save()
+
+    jugador.club = club_destino
+    jugador.save()
+
+    return transaccion
+
+# Reporte
+
+def reporte(request):
+    clubes = Club.objects.all()
+    transacciones = Transaccion.objects.all()
+    if request.method == 'POST':
+        club = request.POST['club']
+        date_from = request.POST['date_from']
+        date_to = request.POST['date_to']
+        print(club, date_from, date_to)
+
+        club = Club.objects.get(nombre=request.POST['club'])
+
+        
+        # transacciones = [transaccion for transaccion in transacciones if transaccion.club_origen == club or transaccion.club_destino == club]
+        # transacciones = transacciones.filter(club_origen=club)
+        # transacciones = transacciones.filter(club_destino=club)
+
+
+        if request.POST['date_from']:
+            transacciones = transacciones.exclude(fecha__lt=request.POST['date_from'])
+        if request.POST['date_to']:
+            transacciones = transacciones.exclude(fecha__gt=request.POST['date_to'])
+        invertido = transacciones.filter(club_origen=club)
+        ganado = transacciones.filter(club_destino=club)
+
+        invertido = [transaccion.costo for transaccion in invertido]
+        ganado = [transaccion.costo for transaccion in ganado]
+
+        invertido = sum(invertido)
+        ganado = sum(ganado)
+    
+    context = {
+        'clubes': clubes,
+        'club': club,
+        'ganancia': ganado - invertido,
+    }
+    return render(request, 'reporte.html', context)

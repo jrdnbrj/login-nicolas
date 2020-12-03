@@ -13,6 +13,12 @@ class JugadorForm(forms.ModelForm):
     class Meta:
         model = Jugador
         fields = '__all__'
+    
+    def clean_costo(self):
+        costo = self.cleaned_data['costo']
+        if costo < 1:
+            raise forms.ValidationError("El número debe ser mayor a 1.")
+        return costo
 
 class ClubForm(forms.ModelForm):
 

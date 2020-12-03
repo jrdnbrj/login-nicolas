@@ -17,4 +17,6 @@ urlpatterns = [
     path('clubes', clubes, name='clubes'),
     path('club/nuevo', nuevo_club, name='nuevo_club'),
     path('club/editar', editar_club, name='editar_club'),
+    #Reporte
+    path('reporte', reporte, name='reporte'),
 ]

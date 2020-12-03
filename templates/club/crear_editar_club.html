@@ -38,7 +38,7 @@
                     <small class="text-danger">{{ error }}</small>
                 {% endfor %}
             </div>
-            {% if action %}
+            {% comment %} {% if action %}
                 <div class="form-group">
                     <label>Total dinero invertido en Jugadores</label><br>
                     <input class="form-control" type="text" placeholder="$ {{ club.dinero_invertido }}" readonly>
@@ -47,7 +47,7 @@
                     <label>Total dinero ganado con venta de Jugadores</label><br>
                     <input class="form-control" type="text" placeholder="$ {{ club.dinero_ganado }}" readonly>
                 </div>
-            {% endif %}
+            {% endif %} {% endcomment %}
             <button type="submit" class="btn btn-primary">Guardar</button>
         </form>
     </div>

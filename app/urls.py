@@ -19,4 +19,6 @@ urlpatterns = [
     path('club/editar', editar_club, name='editar_club'),
     #Reporte
     path('reporte', reporte, name='reporte'),
+    path('clubes/buscar', buscar_clubes, name='buscar_clubes'),
+    path('jugadores/buscar/<orden>', buscar_jugadores, name='buscar_jugadores'),
 ]

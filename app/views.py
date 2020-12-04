@@ -196,3 +196,18 @@ def reporte(request):
         }
     context['clubes'] = clubes
     return render(request, 'reporte.html', context)
+
+def buscar_clubes(request):
+    return render(request, 'reporte.html', { 'clubes': Club.objects.all()})
+
+def buscar_jugadores(request, orden):
+    jugadores = Jugador.objects.all()
+    if orden == 'ascendente':
+        jugadores = jugadores.order_by('costo')
+        context = { 'jugadores': jugadores, 'orden': 'descendente' }
+    elif orden == 'descendente':
+        jugadores = jugadores.order_by('-costo')
+        context = { 'jugadores': jugadores, 'orden': 'ascendente' }
+    else:
+        context = { 'jugadores': jugadores, 'orden': 'ascendente' }
+    return render(request, 'reporte2.html', context)

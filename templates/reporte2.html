@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="col-xl-7 mx-auto my-5">
+        <div class="row mb-5">
+            <a class="btn btn-info btn-lg col-5 mx-auto" href="{% url 'buscar_clubes' %}">Clubes</a>
+            <a class="btn btn-success btn-lg col-5 mx-auto" href="{% url 'buscar_jugadores' 'descedente' %}">Jugadores</a>
+        </div>
+        <label class="display-4 mb-3">Jugadores</label>
+        <table class="table table-hover">
+            <thead>
+                <tr class="text-center">
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Edad</th>
+                    <th scope="col"><a href="{% url 'buscar_jugadores' orden %}">Costo</a></th>
+                    <th scope="col">Club</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for jugador in jugadores %}
+                    <tr class="text-center">
+                        <td>{{ jugador.nombre }}</td>
+                        <td>{{ jugador.edad }}</td>
+                        <td>$ {{ jugador.costo }}</td>
+                        <td>{% if jugador.club %}{{ jugador.club }}{% else %}-{% endif %}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -192,7 +192,9 @@ def reporte(request):
         context = {
             'clubes': clubes,
             'club': club,
-            'ganancia': sum(ganado) - sum(invertido),
+            'invertido': sum(invertido),
+            'ganado': sum(ganado),
+            'ganancia': sum(ganado) - sum(invertido)
         }
     context['clubes'] = clubes
     return render(request, 'reporte.html', context)
